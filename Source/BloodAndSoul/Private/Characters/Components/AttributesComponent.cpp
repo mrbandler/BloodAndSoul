@@ -31,75 +31,75 @@ void UAttributesComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
-float UAttributesComponent::GetMaxStamina() const
+int UAttributesComponent::GetMaxStamina() const
 {
 	return MaxStamina;
 }
 
-float UAttributesComponent::GetStamina() const
+int UAttributesComponent::GetStamina() const
 {
 	return Stamina;
 }
 
-void UAttributesComponent::AddMaxStamina(float StaminaToAdd)
+void UAttributesComponent::IncreaseMaxStamina(int Amount)
 {
-	MaxStamina += StaminaToAdd;
+	MaxStamina += Amount;
 }
 
-void UAttributesComponent::RemoveMaxStamina(float StaminaToRemove)
+void UAttributesComponent::ReduceMaxStamina(int Amount)
 {
-	MaxStamina = FMath::Clamp<float>(MaxStamina - StaminaToRemove, 0, MaxHealth);
+	MaxStamina = FMath::Clamp<int>(MaxStamina - Amount, 0, MaxHealth);
 }
 
-void UAttributesComponent::AddStamina(float StaminaToAdd)
+void UAttributesComponent::IncreaseStamina(int Amount)
 {
-	Stamina = FMath::Clamp<float>(Stamina + StaminaToAdd, 0, MaxStamina);
+	Stamina = FMath::Clamp<int>(Stamina + Amount, 0, MaxStamina);
 }
 
-void UAttributesComponent::RemoveStamina(float StaminaToRemove)
+void UAttributesComponent::ReduceStamina(int Amount)
 {
-	Stamina = FMath::Clamp<float>(Stamina - StaminaToRemove, 0, MaxStamina);
+	Stamina = FMath::Clamp<int>(Stamina - Amount, 0, MaxStamina);
 }
 
-float UAttributesComponent::GetMaxHealth() const
+int UAttributesComponent::GetMaxHealth() const
 {
 	return MaxHealth;
 }
 
-float UAttributesComponent::GetHealth() const
+int UAttributesComponent::GetHealth() const
 {
 	return Health;
 }
 
-void UAttributesComponent::AddMaxHealth(float HealthToAdd)
+void UAttributesComponent::IncreaseMaxHealth(int Amount)
 {
-	MaxHealth += HealthToAdd;
+	MaxHealth += Amount;
 }
 
-void UAttributesComponent::RemoveMaxHealth(float HealthToRemove)
+void UAttributesComponent::ReduceMaxHealth(int Amount)
 {
-	MaxHealth = FMath::Clamp<float>(MaxHealth - HealthToRemove, 0, MaxHealth);
+	MaxHealth = FMath::Clamp<int>(MaxHealth - Amount, 0, MaxHealth);
 }
 
-void UAttributesComponent::AddHealth(float HealthToAdd)
+void UAttributesComponent::IncreaseHealth(int HealthToAdd)
 {
-	Health = FMath::Clamp<float>(Health + HealthToAdd, 0, MaxHealth);
+	Health = FMath::Clamp<int>(Health + HealthToAdd, 0, MaxHealth);
 }
 
-void UAttributesComponent::RemoveHealth(float HealthToRemove)
+void UAttributesComponent::ReduceHealth(int32 HealthToRemove)
 {
-	Health = FMath::Clamp<float>(Health - HealthToRemove, 0, Health);
+	Health = FMath::Clamp<int>(Health - HealthToRemove, 0, Health);
 }
 
 void UAttributesComponent::RegenerateStamina()
 {
 	m_IsStaminaRegenerating = true;
-	GetWorld()->GetTimerManager().SetTimer(m_StaminaRegenerationTimer, this, &UAttributesComponent::OnStaminaRegenerationUpdate, StaminaRegenerationSpeed, true, StaminaRegenerationCooldown);
+	GetWorld()->GetTimerManager().SetTimer(m_StaminaRegenerationTimer, this, &UAttributesComponent::OnStaminaRegenerationTick, StaminaRegenerationSpeed, true, StaminaRegenerationCooldown);
 }
 
-void UAttributesComponent::OnStaminaRegenerationUpdate()
+void UAttributesComponent::OnStaminaRegenerationTick()
 {
-	AddStamina(StaminaRegenerationAmount);
+	IncreaseStamina(StaminaRegenerationAmount);
 	if (GetStamina() == GetMaxStamina())
 	{
 		StopStaminaRegeneration();

@@ -1,13 +1,15 @@
 // Copyright (c) fivefingergames 2019
 
 #include "Characters/Player/PlayerCharacter.h"
+#include "Characters/Components/AttributesComponent.h"
+#include "Items/Components/InventoryComponent.h"
+#include "Items/Database/WeaponItem.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "Characters/Components/AttributesComponent.h"
 #include "Runtime/Engine/Public/EngineGlobals.h"
 
 APlayerCharacter::APlayerCharacter()
@@ -25,7 +27,7 @@ void APlayerCharacter::SetupDefaults()
 	BaseLookUpRate = 45.f;
 	WalkSpeed = 600.f;
 	SprintSpeed = 1000.f;
-	SprintStaminaReduction = 1.f;
+	SprintStaminaReduction = 1;
 
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
@@ -49,13 +51,16 @@ void APlayerCharacter::SetupSceneComponents()
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
 	Camera->bUsePawnControlRotation = false;
+
+	Weapon = CreateEditorOnlyDefaultSubobject<UChildActorComponent>(TEXT("Weapon"));
+	Weapon->SetupAttachment(Cast<USceneComponent>(GetMesh()), TEXT("WeaponSocket"));
 }
 
 void APlayerCharacter::SetupActorComponents()
 {
 	Attributes = CreateDefaultSubobject<UAttributesComponent>(TEXT("Attributes"));
+	Inventory = CreateDefaultSubobject<UInventoryComponent>(TEXT("Inventory"));
 }
-
 
 void APlayerCharacter::BeginPlay()
 {
@@ -139,7 +144,7 @@ void APlayerCharacter::Sprint()
 			GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
 		}
 
-		Attributes->RemoveStamina(SprintStaminaReduction);
+		Attributes->ReduceStamina(SprintStaminaReduction);
 		if (Attributes->GetStamina() <= 0)
 		{
 			StopSprinting();
@@ -151,4 +156,38 @@ void APlayerCharacter::StopSprinting()
 {
 	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 	Attributes->RegenerateStamina();
+}
+
+void APlayerCharacter::EquipWeapon(FWeaponItem* WeaponItem)
+{
+	Weapon->SetChildActorClass(WeaponItem->WeaponToEquip);
+	AWeapon* weapon = Cast<AWeapon>(Weapon->GetChildActor());
+	weapon->SetOwner(this);
+	weapon->SetWeaponItem(WeaponItem);
+}
+
+AWeapon* APlayerCharacter::GetEquippedWeapon() const
+{
+	return Cast<AWeapon>(Weapon->GetChildActor());
+}
+
+void APlayerCharacter::Attack()
+{
+	AWeapon* weapon = GetEquippedWeapon();
+	if (weapon != nullptr && Attributes->GetStamina() > 0) 
+	{
+		//TODO: We need a animation state component to let the animation play and execute the attack.
+
+		Attributes->ReduceStamina(weapon->GetStaminaCost());
+		Attributes->RegenerateStamina();
+	}
+}
+
+float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	float result = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+
+	Attributes->ReduceHealth(DamageAmount);
+
+	return result;
 }

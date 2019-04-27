@@ -39,7 +39,7 @@ public:
 	 *
 	 * @returns	Maximum stamina.
 	 */
-	float GetMaxStamina() const;
+	int GetMaxStamina() const;
 
 	/**
 	 * @fn	float UAttributesComponents::GetStamina() const;
@@ -48,43 +48,43 @@ public:
 	 *
 	 * @returns	Current stamina.
 	 */ 
-	float GetStamina() const;
+	int GetStamina() const;
 
 	/**
-	 * @fn	void UAttributesComponents::AddMaxStamina(float StaminaToAdd);
+	 * @fn	void UAttributesComponent::IncreaseMaxStamina(float Amount);
 	 *
 	 * @brief	Adds to the max stamina.
 	 *
-	 * @param	StaminaToAdd	Stamina to add.
+	 * @param	Amount	Stamina to add.
 	 */
-	void AddMaxStamina(float StaminaToAdd);
+	void IncreaseMaxStamina(int Amount);
 
 	/**
-	 * @fn	void UAttributesComponents::RemoveMaxStamina(float StaminaToRemove);
+	 * @fn	void UAttributesComponent::ReduceMaxStamina(float Amount);
 	 *
 	 * @brief	Removes from the max stamina.
 	 *
-	 * @param	StaminaToRemove	Stamina to remove.
+	 * @param	Amount	Stamina to remove.
 	 */
-	void RemoveMaxStamina(float StaminaToRemove);
+	void ReduceMaxStamina(int Amount);
 
 	/**
-	 * @fn	void UAttributesComponents::AddStamina(float StaminaToAdd);
+	 * @fn	void UAttributesComponent::IncreaseStamina(float Amount);
 	 *
 	 * @brief	Adds to the current stamina.
 	 *
-	 * @param	StaminaToAdd	Stamina to add.
+	 * @param	Amount	Stamina to add.
 	 */
-	void AddStamina(float StaminaToAdd);
+	void IncreaseStamina(int Amount);
 
 	/**
-	 * @fn	void UAttributesComponents::RemoveStamina(float StaminaToRemove);
+	 * @fn	void UAttributesComponent::ReduceStamina(float Amount);
 	 *
 	 * @brief	Removes from the current stamina.
 	 *
-	 * @param	StaminaToRemove	Stamina to remove.
+	 * @param	Amount	Stamina to remove.
 	 */
-	void RemoveStamina(float StaminaToRemove);
+	void ReduceStamina(int Amount);
 
 	/**
 	 * @fn	float UAttributesComponents::GetMaxHealth() const;
@@ -93,7 +93,7 @@ public:
 	 *
 	 * @returns	Maximum health.
 	 */
-	float GetMaxHealth() const;
+	int GetMaxHealth() const;
 
 	/**
 	 * @fn	float UAttributesComponents::GetHealth() const;
@@ -102,43 +102,43 @@ public:
 	 *
 	 * @returns	Current health.
 	 */
-	float GetHealth() const;
+	int GetHealth() const;
 
 	/**
-	 * @fn	void UAttributesComponents::AddMaxHealth(float HealthToAdd);
+	 * @fn	void UAttributesComponent::IncreaseMaxHealth(float Amount);
 	 *
-	 * @brief	Adds to the max health.
+	 * @brief	Increases the max health.
 	 *
-	 * @param	HealthToAdd	Amount of health to add.
+	 * @param	Amount	Amount of health to add.
 	 */
-	void AddMaxHealth(float HealthToAdd);
+	void IncreaseMaxHealth(int Amount);
 
 	/**
-	 * @fn	void UAttributesComponents::RemoveMaxHealth(float HealthToRemove);
+	 * @fn	void UAttributesComponent::ReduceMaxHealth(float Amount);
 	 *
-	 * @brief	Removes from the max health.
+	 * @brief	Reduces the max health.
 	 *
-	 * @param	HealthToRemove	Amount of health to remove.
+	 * @param	Amount	Amount of health to remove.
 	 */
-	void RemoveMaxHealth(float HealthToRemove);
+	void ReduceMaxHealth(int Amount);
 
 	/**
-	 * @fn	void UAttributesComponents::AddHealth(float HealthToAdd);
+	 * @fn	void UAttributesComponent::IncreaseHealth(float Amount);
 	 *
-	 * @brief	Adds to the current health.
+	 * @brief	Increases the current health.
 	 *
-	 * @param	HealthToAdd	Amount of health to add.
+	 * @param	Amount	Amount of health to add.
 	 */
-	void AddHealth(float HealthToAdd);
+	void IncreaseHealth(int HealthToAdd);
 
 	/**
-	 * @fn	void UAttributesComponents::RemoveHealth(float HealthToRemove);
+	 * @fn	void UAttributesComponent::ReduceHealth(float Amount);
 	 *
-	 * @brief	Removes from the current health.
+	 * @brief	Reduces the current health.
 	 *
-	 * @param	HealthToRemove	Amount of health to remove.
+	 * @param	Amount	Amount of health to remove.
 	 */
-	void RemoveHealth(float HealthToRemove);
+	void ReduceHealth(int HealthToRemove);
 
 	/**
 	 * @fn	void UAttributesComponent::RegenerateStamina();
@@ -163,6 +163,7 @@ public:
 	 */
 	bool IsStaminaRegenerating() const;
 
+
 protected:
 
 	/**
@@ -177,18 +178,18 @@ protected:
 	 *
 	 * @brief	Will be called on every stamina regeneration update.
 	 */
-	void OnStaminaRegenerationUpdate();
+	void OnStaminaRegenerationTick();
 
 
 private:
 		
 	/** Maximum stamina. */
 	UPROPERTY(EditAnywhere, Category = "Blood & Soul | Attributes | Stamina", meta = (AllowPrivateAccess = "true"))
-	float MaxStamina;
+	int MaxStamina;
 
 	/** Current stamina. */
 	UPROPERTY(EditAnywhere, Category = "Blood & Soul | Attributes | Stamina", meta = (AllowPrivateAccess = "true"))
-	float Stamina;
+	int Stamina;
 
 	/** Cooldown before stamina regeneration starts. */
 	UPROPERTY(EditAnywhere, Category = "Blood & Soul | Attributes | Stamina", meta = (AllowPrivateAccess = "true"))
@@ -200,15 +201,15 @@ private:
 
 	/** Amount of stamina regenerated on every, regeneration update. */
 	UPROPERTY(EditAnywhere, Category = "Blood & Soul | Attributes | Stamina", meta = (AllowPrivateAccess = "true"))
-	float StaminaRegenerationAmount;
+	int StaminaRegenerationAmount;
 
 	/** Maximum health. */
 	UPROPERTY(EditAnywhere, Category = "Blood & Soul | Attributes | Health", meta = (AllowPrivateAccess = "true"))
-	float MaxHealth;
+	int MaxHealth;
 
 	/** Current health. */
 	UPROPERTY(EditAnywhere, Category = "Blood & Soul | Attributes | Health", meta = (AllowPrivateAccess = "true"))
-	float Health;
+	int Health;
 
 	/** @brief	Stamina regeneration timer */
 	FTimerHandle m_StaminaRegenerationTimer;

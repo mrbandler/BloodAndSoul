@@ -12,14 +12,22 @@ class BLOODANDSOUL_API APlayerCharacter : public ACharacter
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this character's properties
+
+	/**
+	 * @fn	APlayerCharacter::APlayerCharacter();
+	 *
+	 * @brief	Default constructor.
+	 */
 	APlayerCharacter();
 
-	/** Returns spring arm component. **/
-	FORCEINLINE class USpringArmComponent* GetSpringArm() const { return SpringArm; }
-	
-	/** Returns camera component. **/
-	FORCEINLINE class UCameraComponent* GetCamera() const { return Camera; }
+	/**
+	 * @fn	AWeapon* APlayerCharacter::GetEquippedWeapon() const void Attack();
+	 *
+	 * @brief	Returns the currently equipped weapon.
+	 *
+	 * @returns	Null if it fails, else the equipped weapon.
+	 */
+	class AWeapon* GetEquippedWeapon() const;
 
 protected:
 
@@ -31,8 +39,17 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Blood & Soul | Camera", meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* Camera;
 
+	/** Visible weapon. */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Blood & Soul | Combat", meta = (AllowPrivateAccess = "true"))
+	class UChildActorComponent* Weapon;
+
+	/** Attributes. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Blood & Soul | Attributes", meta = (AllowPrivateAccess = "true"))
 	class UAttributesComponent* Attributes;
+
+	/** Inventory. */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Blood & Soul | Inventory", meta = (AllowPrivateAccess = "true"))
+	class UInventoryComponent* Inventory;
 
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Blood & Soul | Camera", meta = (AllowPrivateAccess = "true"))
@@ -52,7 +69,7 @@ protected:
 
 	/** Sprint speed. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Blood & Soul | Movement")
-	float SprintStaminaReduction;
+	int32 SprintStaminaReduction;
 
 	/**
 	 * @fn	virtual void APlayerCharacter::BeginPlay() override;
@@ -129,10 +146,58 @@ protected:
 	 */
 	void StopSprinting();
 
+	/**
+	 * @fn	void APlayerCharacter::EquipWeapon(struct FWeaponItem* WeaponItem);
+	 *
+	 * @brief	Equips the weapon for a given weapon item.
+	 *
+	 * @param [in,out]	WeaponItem	If non-null, the weapon item.
+	 */
+	void EquipWeapon(struct FWeaponItem* WeaponItem);
+
+	/**
+	 * @fn	void APlayerCharacter::Attack();
+	 *
+	 * @brief	Starts 
+	 * 			an attack.
+	 */
+	void Attack();
+
+	/**
+	 * @fn	virtual float APlayerCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, class AActor* DamageCauser) override;
+	 *
+	 * @brief	Will be called when this character takes damage.
+	 *
+	 * @param 		  	DamageAmount   	The damage amount.
+	 * @param 		  	DamageEvent	   	The damage event.
+	 * @param [in,out]	EventInstigator	If non-null, the event instigator.
+	 * @param [in,out]	DamageCauser   	If non-null, the damage causer.
+	 *
+	 * @returns	Damage taken.
+	 */
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
+
 private:
 
+	/**
+	 * @fn	void APlayerCharacter::SetupDefaults();
+	 *
+	 * @brief	Sets up the default values.
+	 */
 	void SetupDefaults();
+
+	/**
+	 * @fn	void APlayerCharacter::SetupSceneComponents();
+	 *
+	 * @brief	Sets up the scene components.
+	 */
 	void SetupSceneComponents();
+
+	/**
+	 * @fn	void APlayerCharacter::SetupActorComponents();
+	 *
+	 * @brief	Sets up the actor components.
+	 */
 	void SetupActorComponents();
 
 };
