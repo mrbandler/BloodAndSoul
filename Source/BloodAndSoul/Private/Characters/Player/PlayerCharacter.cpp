@@ -7,40 +7,55 @@
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Characters/Components/AttributesComponent.h"
+#include "Runtime/Engine/Public/EngineGlobals.h"
 
 APlayerCharacter::APlayerCharacter()
 {
-	// Set size for collision capsule
-	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
+	SetupDefaults();
+	SetupSceneComponents();
+	SetupActorComponents();
+}
 
-	// set our turn rates for input
+void APlayerCharacter::SetupDefaults()
+{
+	PrimaryActorTick.bCanEverTick = true;
+
 	BaseTurnRate = 45.f;
 	BaseLookUpRate = 45.f;
 	WalkSpeed = 600.f;
-	SprintSpeed = 800.f;
+	SprintSpeed = 1000.f;
+	SprintStaminaReduction = 1.f;
 
-	// Don't rotate when the controller rotates. Let that just affect the camera.
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
+}
 
-	// Configure character movement
+void APlayerCharacter::SetupSceneComponents()
+{
+	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
+
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 540.0f, 0.0f);
 	GetCharacterMovement()->JumpZVelocity = 600.f;
 	GetCharacterMovement()->AirControl = 0.2f;
 
-	// Create a spring arm
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	SpringArm->SetupAttachment(RootComponent);
 	SpringArm->TargetArmLength = 300.0f;
 	SpringArm->bUsePawnControlRotation = true;
 
-	// Create a camera
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
 	Camera->bUsePawnControlRotation = false;
 }
+
+void APlayerCharacter::SetupActorComponents()
+{
+	Attributes = CreateDefaultSubobject<UAttributesComponent>(TEXT("Attributes"));
+}
+
 
 void APlayerCharacter::BeginPlay()
 {
@@ -50,6 +65,16 @@ void APlayerCharacter::BeginPlay()
 void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	FString maxStaminaMessage = "MaxStamina: " + FString::SanitizeFloat(Attributes->GetMaxStamina());
+	FString staminaMessage = "Stamina: " + FString::SanitizeFloat(Attributes->GetStamina());
+	FString maxHealthMessage = "MaxHealth: " + FString::SanitizeFloat(Attributes->GetMaxHealth());
+	FString healthMessage = "Health: " + FString::SanitizeFloat(Attributes->GetHealth());
+
+	GEngine->AddOnScreenDebugMessage(-1, 0, FColor::Black, maxStaminaMessage);
+	GEngine->AddOnScreenDebugMessage(-1, 0, FColor::Black, staminaMessage);
+	GEngine->AddOnScreenDebugMessage(-1, 0, FColor::Black, maxHealthMessage);
+	GEngine->AddOnScreenDebugMessage(-1, 0, FColor::Black, healthMessage);
 }
 
 void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -108,11 +133,22 @@ void APlayerCharacter::LookUpAtRate(float Rate)
 
 void APlayerCharacter::Sprint()
 {
-	GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
-	//TODO: Detuct stamina.
+	if (Attributes->GetStamina() > 0 && Attributes->IsStaminaRegenerating() == false) 
+	{
+		if (GetCharacterMovement()->MaxWalkSpeed != SprintSpeed) {
+			GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
+		}
+
+		Attributes->RemoveStamina(SprintStaminaReduction);
+		if (Attributes->GetStamina() <= 0)
+		{
+			StopSprinting();
+		}
+	}
 }
 
 void APlayerCharacter::StopSprinting()
 {
 	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
+	Attributes->RegenerateStamina();
 }

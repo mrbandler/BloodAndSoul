@@ -31,6 +31,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Blood & Soul | Camera", meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* Camera;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Blood & Soul | Attributes", meta = (AllowPrivateAccess = "true"))
+	class UAttributesComponent* Attributes;
+
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Blood & Soul | Camera", meta = (AllowPrivateAccess = "true"))
 	float BaseTurnRate;
@@ -46,6 +49,10 @@ protected:
 	/** Sprint speed. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Blood & Soul | Movement")
 	float SprintSpeed;
+
+	/** Sprint speed. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Blood & Soul | Movement")
+	float SprintStaminaReduction;
 
 	/**
 	 * @fn	virtual void APlayerCharacter::BeginPlay() override;
@@ -121,5 +128,11 @@ protected:
 	 * @brief	Stops a sprint
 	 */
 	void StopSprinting();
+
+private:
+
+	void SetupDefaults();
+	void SetupSceneComponents();
+	void SetupActorComponents();
 
 };
