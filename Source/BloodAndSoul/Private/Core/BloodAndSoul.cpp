@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright (c) fivefingergames 2019
 
 #include "BloodAndSoul.h"
 #include "Modules/ModuleManager.h"
