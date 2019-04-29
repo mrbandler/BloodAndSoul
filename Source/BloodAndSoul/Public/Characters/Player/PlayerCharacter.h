@@ -29,27 +29,58 @@ public:
 	 */
 	class AWeapon* GetEquippedWeapon() const;
 
+	/**
+	 * @fn	void APlayerCharacter::SetInteractable(class AInteractable* Interactable);
+	 *
+	 * @brief	Sets an interactable.
+	 *
+	 * @param [in,out]	Interactable	If non-null, the interactable.
+	 */
+	void SetInteractable(class AInteractable* Interactable);
+
+	/**
+	 * @fn	FORCEINLINE UInventoryComponent* APlayerCharacter::GetInventory() const
+	 *
+	 * @brief	Gets the inventory
+	 *
+	 * @returns	Null if it fails, else the inventory.
+	 */
+	FORCEINLINE class UInventoryComponent* GetInventory() const { return Inventory; };
+
+	/**
+	 * @fn	FORCEINLINE UAttributesComponent* APlayerCharacter::GetAttributes() const
+	 *
+	 * @brief	Gets the attributes.
+	 *
+	 * @returns	Null if it fails, else the attributes.
+	 */
+	FORCEINLINE class UAttributesComponent* GetAttributes() const { return Attributes; };
+
 protected:
 
 	/** Camera spring arm used for positioning the camera behind the character. */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Blood & Soul | Camera", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	class USpringArmComponent* SpringArm;
 
 	/** Camera. */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Blood & Soul | Camera", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* Camera;
 
 	/** Visible weapon. */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Blood & Soul | Combat", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	class UChildActorComponent* Weapon;
 
 	/** Attributes. */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Blood & Soul | Attributes", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	class UAttributesComponent* Attributes;
 
 	/** Inventory. */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Blood & Soul | Inventory", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	class UInventoryComponent* Inventory;
+
+	/** Animation state. */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	class UAnimationStateComponent* AnimationState;
 
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Blood & Soul | Camera", meta = (AllowPrivateAccess = "true"))
@@ -63,11 +94,11 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Blood & Soul | Movement", meta = (AllowPrivateAccess = "true"))
 	float WalkSpeed;
 
-	/** Sprint speed. */
+	/** Sprint32 speed. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Blood & Soul | Movement")
 	float SprintSpeed;
 
-	/** Sprint speed. */
+	/** Sprint32 speed. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Blood & Soul | Movement")
 	int32 SprintStaminaReduction;
 
@@ -177,7 +208,20 @@ protected:
 	 */
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 
+	/**
+	 * @fn	void APlayerCharacter::Interact();
+	 *
+	 * @brief	Start the interaction process with a currently set interactable.
+	 */
+	void Interact();
+
 private:
+
+	/** @brief	The interactable. */
+	class AInteractable* m_Interactable;
+
+	UFUNCTION()
+	void OnDeath();
 
 	/**
 	 * @fn	void APlayerCharacter::SetupDefaults();

@@ -16,10 +16,5 @@ class BLOODANDSOUL_API ABSPlayerController : public APlayerController
 
 public:
 	ABSPlayerController();
-		
-protected:
-
-private:
-
 
 };

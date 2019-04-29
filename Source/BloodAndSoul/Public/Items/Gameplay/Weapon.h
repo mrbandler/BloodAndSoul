@@ -95,19 +95,19 @@ protected:
 private:
 
 	/** The weapons mesh. */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Blood & Soul | Components", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* Mesh;
 
 	/** The attack trace start location. */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Blood & Soul | Components", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	UArrowComponent* AttackTraceStart;
 
 	/** The attack trace end location. */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Blood & Soul | Components", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	UArrowComponent* AttackTraceEnd;
 
 	/** Flag to enable debug feedback. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Soul & Vessel | Debugging", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Blood & Soul | Debugging", meta = (AllowPrivateAccess = "true"))
 	bool bDebug = false;
 
 	/** @brief   The draw debug trace tag. */

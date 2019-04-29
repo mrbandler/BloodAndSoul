@@ -6,23 +6,38 @@
 #include "Components/ActorComponent.h"
 #include "ShopComponent.generated.h"
 
-
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class BLOODANDSOUL_API UShopComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
 public:	
-	// Sets default values for this component's properties
+
+	/**
+	 * @fn	UShopComponent::UShopComponent();
+	 *
+	 * @brief	Default constructor.
+	 */
 	UShopComponent();
 
-protected:
-	// Called when the game starts
-	virtual void BeginPlay() override;
-
-public:	
-	// Called every frame
+	/**
+	 * @fn	virtual void UShopComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	 *
+	 * @brief	Will be called every frame.
+	 *
+	 * @param 		  	DeltaTime			The delta time.
+	 * @param 		  	TickType			Type of the tick.
+	 * @param [in,out]	ThisTickFunction	If non-null, this tick function.
+	 */
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-		
+protected:
+
+	/**
+	 * @fn	virtual void UShopComponent::BeginPlay() override;
+	 *
+	 * @brief	Will be called when the owning actor spawns or the component is added to an actor durin runtime.
+	 */
+	virtual void BeginPlay() override;
+
 };

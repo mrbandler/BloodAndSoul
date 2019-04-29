@@ -20,12 +20,22 @@ void UInventoryComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
-void UInventoryComponent::AddSlots(int Amount)
+int32 UInventoryComponent::GetMaxSlots()
+{
+	return MaxSlots;
+}
+
+int32 UInventoryComponent::GetFreeSlots()
+{
+	return MaxSlots - m_Items.Num();
+}
+
+void UInventoryComponent::AddSlots(int32 Amount)
 {
 	MaxSlots += Amount;
 }
 
-void UInventoryComponent::RemoveSlots(int Amount)
+void UInventoryComponent::RemoveSlots(int32 Amount)
 {
 	MaxSlots = FMath::Clamp<int>(MaxSlots - Amount, 0, MaxSlots);
 }

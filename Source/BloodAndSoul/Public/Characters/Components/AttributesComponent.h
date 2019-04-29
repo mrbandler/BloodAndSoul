@@ -6,6 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "AttributesComponent.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDeath);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class BLOODANDSOUL_API UAttributesComponent : public UActorComponent
@@ -32,6 +33,10 @@ public:
 	 */
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	/** Will be fired when the character dies. */
+	UPROPERTY(BlueprintAssignable, Category = "Twitch Auth|Events")
+	FOnDeath OnDeath;
+
 	/**
 	 * @fn	float UAttributesComponents::GetMaxStamina() const;
 	 *
@@ -39,7 +44,7 @@ public:
 	 *
 	 * @returns	Maximum stamina.
 	 */
-	int GetMaxStamina() const;
+	int32 GetMaxStamina() const;
 
 	/**
 	 * @fn	float UAttributesComponents::GetStamina() const;
@@ -48,7 +53,7 @@ public:
 	 *
 	 * @returns	Current stamina.
 	 */ 
-	int GetStamina() const;
+	int32 GetStamina() const;
 
 	/**
 	 * @fn	void UAttributesComponent::IncreaseMaxStamina(float Amount);
@@ -57,7 +62,7 @@ public:
 	 *
 	 * @param	Amount	Stamina to add.
 	 */
-	void IncreaseMaxStamina(int Amount);
+	void IncreaseMaxStamina(int32 Amount);
 
 	/**
 	 * @fn	void UAttributesComponent::ReduceMaxStamina(float Amount);
@@ -66,7 +71,7 @@ public:
 	 *
 	 * @param	Amount	Stamina to remove.
 	 */
-	void ReduceMaxStamina(int Amount);
+	void ReduceMaxStamina(int32 Amount);
 
 	/**
 	 * @fn	void UAttributesComponent::IncreaseStamina(float Amount);
@@ -75,7 +80,7 @@ public:
 	 *
 	 * @param	Amount	Stamina to add.
 	 */
-	void IncreaseStamina(int Amount);
+	void IncreaseStamina(int32 Amount);
 
 	/**
 	 * @fn	void UAttributesComponent::ReduceStamina(float Amount);
@@ -84,7 +89,7 @@ public:
 	 *
 	 * @param	Amount	Stamina to remove.
 	 */
-	void ReduceStamina(int Amount);
+	void ReduceStamina(int32 Amount);
 
 	/**
 	 * @fn	float UAttributesComponents::GetMaxHealth() const;
@@ -93,7 +98,7 @@ public:
 	 *
 	 * @returns	Maximum health.
 	 */
-	int GetMaxHealth() const;
+	int32 GetMaxHealth() const;
 
 	/**
 	 * @fn	float UAttributesComponents::GetHealth() const;
@@ -102,7 +107,7 @@ public:
 	 *
 	 * @returns	Current health.
 	 */
-	int GetHealth() const;
+	int32 GetHealth() const;
 
 	/**
 	 * @fn	void UAttributesComponent::IncreaseMaxHealth(float Amount);
@@ -111,7 +116,7 @@ public:
 	 *
 	 * @param	Amount	Amount of health to add.
 	 */
-	void IncreaseMaxHealth(int Amount);
+	void IncreaseMaxHealth(int32 Amount);
 
 	/**
 	 * @fn	void UAttributesComponent::ReduceMaxHealth(float Amount);
@@ -120,7 +125,7 @@ public:
 	 *
 	 * @param	Amount	Amount of health to remove.
 	 */
-	void ReduceMaxHealth(int Amount);
+	void ReduceMaxHealth(int32 Amount);
 
 	/**
 	 * @fn	void UAttributesComponent::IncreaseHealth(float Amount);
@@ -129,7 +134,7 @@ public:
 	 *
 	 * @param	Amount	Amount of health to add.
 	 */
-	void IncreaseHealth(int HealthToAdd);
+	void IncreaseHealth(int32 Amount);
 
 	/**
 	 * @fn	void UAttributesComponent::ReduceHealth(float Amount);
@@ -138,7 +143,43 @@ public:
 	 *
 	 * @param	Amount	Amount of health to remove.
 	 */
-	void ReduceHealth(int HealthToRemove);
+	void ReduceHealth(int32 Amount);
+
+	/**
+	 * @fn	int32 UAttributesComponent::GetMaxSoul();
+	 *
+	 * @brief	Gets maximum soul
+	 *
+	 * @returns	The maximum soul.
+	 */
+	int32 GetMaxSoul();
+
+	/**
+	 * @fn	int32 UAttributesComponent::GetSoul();
+	 *
+	 * @brief	Gets the soul
+	 *
+	 * @returns	The soul.
+	 */
+	int32 GetSoul();
+
+	/**
+	 * @fn	void UAttributesComponent::IncreasSoul(int32 Amount);
+	 *
+	 * @brief	Increas soul
+	 *
+	 * @param	Amount	The amount.
+	 */
+	void IncreasSoul(int32 Amount);
+
+	/**
+	 * @fn	void UAttributesComponent::ReduceSoul(int32 Amount);
+	 *
+	 * @brief	Reduce soul
+	 *
+	 * @param	Amount	The amount.
+	 */
+	void ReduceSoul(int32 Amount);
 
 	/**
 	 * @fn	void UAttributesComponent::RegenerateStamina();
@@ -185,11 +226,11 @@ private:
 		
 	/** Maximum stamina. */
 	UPROPERTY(EditAnywhere, Category = "Blood & Soul | Attributes | Stamina", meta = (AllowPrivateAccess = "true"))
-	int MaxStamina;
+	int32 MaxStamina;
 
 	/** Current stamina. */
 	UPROPERTY(EditAnywhere, Category = "Blood & Soul | Attributes | Stamina", meta = (AllowPrivateAccess = "true"))
-	int Stamina;
+	int32 Stamina;
 
 	/** Cooldown before stamina regeneration starts. */
 	UPROPERTY(EditAnywhere, Category = "Blood & Soul | Attributes | Stamina", meta = (AllowPrivateAccess = "true"))
@@ -201,15 +242,23 @@ private:
 
 	/** Amount of stamina regenerated on every, regeneration update. */
 	UPROPERTY(EditAnywhere, Category = "Blood & Soul | Attributes | Stamina", meta = (AllowPrivateAccess = "true"))
-	int StaminaRegenerationAmount;
+	int32 StaminaRegenerationAmount;
 
 	/** Maximum health. */
 	UPROPERTY(EditAnywhere, Category = "Blood & Soul | Attributes | Health", meta = (AllowPrivateAccess = "true"))
-	int MaxHealth;
+	int32 MaxHealth;
 
 	/** Current health. */
 	UPROPERTY(EditAnywhere, Category = "Blood & Soul | Attributes | Health", meta = (AllowPrivateAccess = "true"))
-	int Health;
+	int32 Health;
+
+	/** Maximum soul. */
+	UPROPERTY(EditAnywhere, Category = "Blood & Soul | Attributes | Health", meta = (AllowPrivateAccess = "true"))
+	int32 MaxSoul;
+
+	/** Current soul. */
+	UPROPERTY(EditAnywhere, Category = "Blood & Soul | Attributes | Health", meta = (AllowPrivateAccess = "true"))
+	int32 Soul;
 
 	/** @brief	Stamina regeneration timer */
 	FTimerHandle m_StaminaRegenerationTimer;

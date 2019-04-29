@@ -33,22 +33,40 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	/**
-	 * @fn	void UInventoryComponent::AddSlots(int Amount, ESlotType SlotType);
+	 * @fn	int32 UInventoryComponent::GetMaxSlots();
+	 *
+	 * @brief	Gets maximum slots
+	 *
+	 * @returns	The maximum slots.
+	 */
+	int32 GetMaxSlots();
+
+	/**
+	 * @fn	int32 UInventoryComponent::GetFreeSlots();
+	 *
+	 * @brief	Gets free slots
+	 *
+	 * @returns	The free slots.
+	 */
+	int32 GetFreeSlots();
+
+	/**
+	 * @fn	void UInventoryComponent::AddSlots(int32 Amount, ESlotType SlotType);
 	 *
 	 * @brief	Adds slots.
 	 *
 	 * @param	Amount  	Amount of slots to add.
 	 */
-	void AddSlots(int Amount);
+	void AddSlots(int32 Amount);
 
 	/**
-	 * @fn	void UInventoryComponent::RemoveSlots(int Amount);
+	 * @fn	void UInventoryComponent::RemoveSlots(int32 Amount);
 	 *
 	 * @brief	Removes slots.
 	 *
 	 * @param	Amount	Amount of slots to add.
 	 */
-	void RemoveSlots(int Amount);
+	void RemoveSlots(int32 Amount);
 
 	/**
 	 * @fn	void UInventoryComponent::AddItem(FItem* Item);
@@ -96,7 +114,7 @@ public:
 		{
 			if (item->Id == ItemId)
 			{
-				result = Cast<T>(item);
+				result = static_cast<T*>(item);
 
 				break;
 			}
@@ -121,7 +139,7 @@ public:
 
 		for (FItem* item : m_Items) 
 		{
-			if (T* castedItem = Cast<T>(item)) 
+			if (T* castedItem = static_cast<T*>(item)) 
 			{
 				result.Add(castedItem);
 			}
@@ -142,8 +160,8 @@ protected:
 private:
 
 	/** Max inventory slots. */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Blood & Soul | Storage", meta = (AllowPrivateAccess = "true"))
-	int MaxSlots;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Blood & Soul | Storage", meta = (AllowPrivateAccess = "true"))
+	int32 MaxSlots;
 
 	/** @brief	Inventory items. */
 	TArray<FItem*> m_Items;

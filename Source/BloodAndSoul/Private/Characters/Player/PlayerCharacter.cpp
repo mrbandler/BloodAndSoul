@@ -2,15 +2,20 @@
 
 #include "Characters/Player/PlayerCharacter.h"
 #include "Characters/Components/AttributesComponent.h"
+#include "Characters/Components/AnimationStateComponent.h"
 #include "Items/Components/InventoryComponent.h"
 #include "Items/Database/WeaponItem.h"
+#include "GameModes/BSGameModeBase.h"
+#include "Interaction/Interactable.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
+#include "Components/SkeletalMeshComponent.h" 
 #include "Camera/CameraComponent.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Runtime/Engine/Public/EngineGlobals.h"
+#include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 
 APlayerCharacter::APlayerCharacter()
 {
@@ -59,12 +64,19 @@ void APlayerCharacter::SetupSceneComponents()
 void APlayerCharacter::SetupActorComponents()
 {
 	Attributes = CreateDefaultSubobject<UAttributesComponent>(TEXT("Attributes"));
+	Attributes->OnDeath.AddDynamic(this, &APlayerCharacter::OnDeath);
+
 	Inventory = CreateDefaultSubobject<UInventoryComponent>(TEXT("Inventory"));
+	AnimationState = CreateDefaultSubobject<UAnimationStateComponent>(TEXT("AnimationState"));
 }
 
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();	
+
+	//ABSGameModeBase* gameMode = Cast<ABSGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
+	//FWeaponItem* weaponItem = gameMode->GetWeaponFromDB("W_Sword_1");
+	//this->EquipWeapon(weaponItem);
 }
 
 void APlayerCharacter::Tick(float DeltaTime)
@@ -88,11 +100,12 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 	check(PlayerInputComponent);
 
-	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &APlayerCharacter::Jump);
-	PlayerInputComponent->BindAction("Jump", IE_Released, this, &APlayerCharacter::StopJumping);
+	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &APlayerCharacter::Interact);
 
 	PlayerInputComponent->BindAction("Sprint", IE_Repeat, this, &APlayerCharacter::Sprint);
 	PlayerInputComponent->BindAction("Sprint", IE_Released, this, &APlayerCharacter::StopSprinting);
+
+	PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &APlayerCharacter::Attack);
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &APlayerCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &APlayerCharacter::MoveRight);
@@ -174,12 +187,16 @@ AWeapon* APlayerCharacter::GetEquippedWeapon() const
 void APlayerCharacter::Attack()
 {
 	AWeapon* weapon = GetEquippedWeapon();
-	if (weapon != nullptr && Attributes->GetStamina() > 0) 
+	if (weapon != nullptr) 
 	{
-		//TODO: We need a animation state component to let the animation play and execute the attack.
+		int32 staminaCost = weapon->GetStaminaCost();
+		if (Attributes->GetStamina() > staminaCost) 
+		{
+			AnimationState->Attack();
 
-		Attributes->ReduceStamina(weapon->GetStaminaCost());
-		Attributes->RegenerateStamina();
+			Attributes->ReduceStamina(staminaCost);
+			Attributes->RegenerateStamina();
+		}
 	}
 }
 
@@ -187,7 +204,28 @@ float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 {
 	float result = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
+	AnimationState->Hit();
 	Attributes->ReduceHealth(DamageAmount);
 
 	return result;
+}
+
+void APlayerCharacter::OnDeath()
+{
+	DisableInput(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+	AnimationState->Die();
+	GetMesh()->SetSimulatePhysics(true);
+}
+
+void APlayerCharacter::SetInteractable(AInteractable* Interactable)
+{
+	m_Interactable = Interactable;
+}
+
+void APlayerCharacter::Interact()
+{
+	if (m_Interactable != nullptr)
+	{
+		m_Interactable->Interact();
+	}
 }

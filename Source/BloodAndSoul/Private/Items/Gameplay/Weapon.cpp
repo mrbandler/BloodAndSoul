@@ -60,6 +60,12 @@ void AWeapon::AttackBegin()
 	hitEnemies.Empty();
 }
 
+/**
+ * @fn	void AWeapon::AttackTick()
+ *
+ * @brief	Attack tick
+ */
+
 void AWeapon::AttackTick()
 {
 	ACharacter* owningCharacter = GetOwningCharacter();

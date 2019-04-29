@@ -9,7 +9,7 @@
 UENUM(BlueprintType)
 enum class EGearType : uint8 
 {
-	BloodVeil,
+	BloodVial,
 	SoulShard
 };
 
@@ -20,5 +20,8 @@ struct FGearItem : public FItem
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	EGearType Type;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 Amount;
 
 };
